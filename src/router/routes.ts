@@ -3,8 +3,20 @@ import { RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    redirect:'/home',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/home/index.vue') }]
+    children: [
+      { 
+        path: '/', 
+        component: () => import('components/commonContent.vue'),
+        children:[
+          {
+            path: '/home',
+            component: () => import('pages/home/index.vue'),
+          }
+        ]
+      }
+    ]
   },
 
   // Always leave this as last one,

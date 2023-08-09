@@ -7,15 +7,15 @@ q-layout(view='lHh Lpr fFf')
   SideBar
   
   //- Page Wrapper
-  q-page-container.relative-position
+  q-page-container
     router-view
-
+    
   //- Footer
   Footer.fixed(v-show="showFooter")
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import eventBus from 'src/Utils/useEventBus';
 //- Components
 import HeaderBar from './header-bar/index.vue';
@@ -47,7 +47,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .fixed{position: fixed;}
 </style>
 

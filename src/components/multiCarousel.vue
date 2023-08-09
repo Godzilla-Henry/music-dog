@@ -11,12 +11,21 @@
     .inner(ref='inner' :style='innerStyles')
         q-card.card(v-for='(list) in chunkedArray' :key='list' flat)
             q-list
-                q-item.q-my-sm(v-for='item in list' :key='item' clickable v-ripple)
+                q-item.q-my-sm.playerListItem(
+                    v-for='item in list' :key='item' 
+                    clickable v-ripple
+                )
                     q-item-section(avatar)
-                        q-avatar(square color='grey-7' text-color='white') {{ item }}
-                    q-item-section
+                        .albumImg
+                            q-avatar(square color='grey-7' text-color='white') {{ item }}
+                            .player
+                                q-btn(round flat color="white" icon="play_arrow" size='16px' @click="eventBus.emit('openPlayer')")
+                    q-item-section.info
                         q-item-label Song Title
                         q-item-label(caption lines='1') singer or group
+                        .action.flex
+                            q-btn(flat round color="grey-6" size="md" icon="thumb_up")
+                            q-btn(flat round color="grey-6" size="md" icon="thumb_down")
 
                     q-item-section(side)
                         span 4:16
@@ -144,27 +153,34 @@ export default defineComponent({
             margin-right: 25px;
             background-color: transparent;
             color: grey-9;
-            .albumImg{
-                position: relative;
-                .img{
-                    max-width: 250px;
+            .playerListItem{
+                &:hover .albumImg .player,
+                &:hover .info .action{
+                    display: block !important;
                 }
-                &:hover{ box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3); }
-                &:hover .info,
-                &:hover .player{
-                    opacity: 1;
+                .albumImg{
+                    position: relative;
+                    .img{
+                        max-width: 250px;
+                    }
+                    .player{
+                        background-color: grey;
+                        width: 100%;
+                        height: 100%;
+                        position: absolute;
+                        left: 0px;
+                        bottom: 0px;
+                        display: none;
+                    }
                 }
+
                 .info{
-                    position: absolute;
-                    right: 5px;
-                    top: 5px;
-                    opacity: 0;
-                }
-                .player{
-                    position: absolute;
-                    right: 15px;
-                    bottom: 15px;
-                    opacity: 0;
+                    position: relative;
+                    .action{
+                        position: absolute;
+                        right: 0;
+                        display: none;
+                    }
                 }
             }
         }
