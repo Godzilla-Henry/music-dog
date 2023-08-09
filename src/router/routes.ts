@@ -3,15 +3,15 @@ import { RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect:'/home',
+    redirect:'/musicDog/home',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { 
-        path: '/', 
+        path: '/musicDog', 
         component: () => import('components/commonContent.vue'),
         children:[
           {
-            path: '/home',
+            path: '/musicDog/home',
             component: () => import('pages/home/index.vue'),
           }
         ]
