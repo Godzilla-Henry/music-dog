@@ -8,7 +8,7 @@
 .carousel
     .inner(ref='inner' :style='innerStyles')
         q-card.card(v-for='card in cards' :key='card' flat)
-            .albumImg(@click.prevent="toContentList")
+            .albumImg(@click.prevent="toContentList" :class="{active: card === curActive}")
                 q-img.img.rounded-borders(
                     src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw8PDw8PDw8PDw0PDw8PDw8PDQ8PDQ8PFRUWFhURFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKBQUFDgUFDisZExkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQYC/8QAFhABAQEAAAAAAAAAAAAAAAAAAAER/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDTgqkoAAAAAAACiACoAoIAKACAAKCAAAAAAC4AgAAAAAAEAAAVFBAAVBQQUBBQEAAAAAAABRAAAAAAAAAFQAVFQBUUASKAIoAAIKgAAAAAAGgAAAAAAAAAAAKgCiAKAAAAgAAAAAAAAAAAAAAAAAAAAoICgiooAigAAgAAKCAoIAAAAAAAACggqAAACoCiKCKAAAAAIKgAAAAAqAAoIAAogCgCAAAAAAKgAKAigAACKgAAAAAACgAYACKAAgAKAIqAqKAGCAqKgAAAAAACgAACKACKgAAKACCoAoAAAAAAAgKCAAAAAoAigAAAAgoCaKAgKAioAoAAAAACAKgAAAAAAAKIAoAiooIogAuAIAAACgAiooAFAEAAAAAAAAACCgIKCAAAoAYAioAoAAAAAAigiooAIAqAAKCAAAoCCgioAoAIKAgACoAqCggqAoAIKAIqAAAAAqAABAVAAABRAFABAAAABUoCoACgIKAIoCAAAAAAAAAAAAAACgIoAgAAAKgAqgDlQAqAAAAUAVAAUAQoAqUAAAUAH//Z"
                     spinner-color="white"
@@ -20,7 +20,12 @@
                     @mouseover="isPlayerHover = true"
                     @mouseout="isPlayerHover = false"
                 )
-                    q-btn(round color="grey" icon="play_arrow" :size="isPlayerHover? '16px': 'md'" @click.stop="eventBus.emit('openPlayer')")
+                    q-btn(
+                        :loading="loading"
+                        round color="grey" icon="play_arrow"
+                        :size="isPlayerHover? '16px': 'md'" 
+                        @click.stop="play(card)"
+                    )
             q-card-section
                 .text-h6 Song Title {{ card }}
                 .text-subtitle2 singer or group name
@@ -100,7 +105,17 @@ export default defineComponent({
             }
         }
 
+        const loading = ref<boolean>(false);
         const isPlayerHover = ref<boolean>(false);
+        const curActive = ref<string>();
+        const play = (card: any) => {
+            loading.value = true;
+            curActive.value = card;
+            setTimeout(() => {
+                eventBus.emit('openPlayer')
+                loading.value = false;
+            }, 700);
+        }
         const router = useRouter();
         const toContentList = () => {
             console.log("To ContentList");
@@ -116,10 +131,13 @@ export default defineComponent({
             cards,
             inner,
             innerStyles,
+            loading,
             isPlayerHover,
+            curActive,
             eventBus,
             next,
             prev,
+            play,
             toContentList,
         }
     }
@@ -145,11 +163,8 @@ export default defineComponent({
                 .img{
                     max-width: 250px;
                 }
-                &:hover{ box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3); }
-                &:hover .info,
-                &:hover .player{
-                    opacity: 1;
-                }
+                &:hover, &.active{ box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3); }
+                &:hover .info, &:hover .player, &.active .info, &.active .player{ opacity: 1; }
                 .info{
                     position: absolute;
                     right: 5px;

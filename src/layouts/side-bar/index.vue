@@ -29,7 +29,7 @@ q-drawer(
         //- 功能清單
         q-list.rounded-borders.text-grey.q-pa-md
             q-item-label.q-pa-md(overline) Discover
-            q-item(clickable v-ripple)
+            q-item.active(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='cottage')
                 q-item-section Home
@@ -146,6 +146,12 @@ export default defineComponent({
         font-weight: 800;
         color: $grey;
     }
+}
+
+.q-item.active{
+    background-color: $grey-6;
+    color: white;
+    border-radius: 5px;
 }
 
 .hide{
