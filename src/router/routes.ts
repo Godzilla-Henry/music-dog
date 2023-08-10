@@ -13,6 +13,10 @@ const routes: RouteRecordRaw[] = [
           {
             path: '/musicDog/home',
             component: () => import('pages/home/index.vue'),
+          },
+          {
+            path: '/musicDog/contentList',
+            component: () => import('pages/content-list/index.vue'),
           }
         ]
       }

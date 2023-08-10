@@ -8,7 +8,7 @@
 .carousel
     .inner(ref='inner' :style='innerStyles')
         q-card.card(v-for='card in cards' :key='card' flat)
-            .albumImg
+            .albumImg(@click.prevent="toContentList")
                 q-img.img.rounded-borders(
                     src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw8PDw8PDw8PDw0PDw8PDw8PDQ8PDQ8PFRUWFhURFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKBQUFDgUFDisZExkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQYC/8QAFhABAQEAAAAAAAAAAAAAAAAAAAER/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDTgqkoAAAAAAACiACoAoIAKACAAKCAAAAAAC4AgAAAAAAEAAAVFBAAVBQQUBBQEAAAAAAABRAAAAAAAAAFQAVFQBUUASKAIoAAIKgAAAAAAGgAAAAAAAAAAAKgCiAKAAAAgAAAAAAAAAAAAAAAAAAAAoICgiooAigAAgAAKCAoIAAAAAAAACggqAAACoCiKCKAAAAAIKgAAAAAqAAoIAAogCgCAAAAAAKgAKAigAACKgAAAAAACgAYACKAAgAKAIqAqKAGCAqKgAAAAAACgAACKACKgAAKACCoAoAAAAAAAgKCAAAAAoAigAAAAgoCaKAgKAioAoAAAAACAKgAAAAAAAKIAoAiooIogAuAIAAACgAiooAFAEAAAAAAAAACCgIKCAAAoAYAioAoAAAAAAigiooAIAqAAKCAAAoCCgioAoAIKAgACoAqCggqAoAIKAIqAAAAAqAABAVAAABRAFABAAAABUoCoACgIKAIoCAAAAAAAAAAAAAACgIoAgAAAKgAqgDlQAqAAAAUAVAAUAQoAqUAAAUAH//Z"
                     spinner-color="white"
@@ -20,7 +20,7 @@
                     @mouseover="isPlayerHover = true"
                     @mouseout="isPlayerHover = false"
                 )
-                    q-btn(round color="grey" icon="play_arrow" :size="isPlayerHover? '16px': 'md'" @click="eventBus.emit('openPlayer')")
+                    q-btn(round color="grey" icon="play_arrow" :size="isPlayerHover? '16px': 'md'" @click.stop="eventBus.emit('openPlayer')")
             q-card-section
                 .text-h6 Song Title {{ card }}
                 .text-subtitle2 singer or group name
@@ -29,6 +29,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import eventBus from 'src/Utils/useEventBus';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     setup () {
@@ -100,6 +101,11 @@ export default defineComponent({
         }
 
         const isPlayerHover = ref<boolean>(false);
+        const router = useRouter();
+        const toContentList = () => {
+            console.log("To ContentList");
+            router.push({ path: '/musicDog/contentList' })
+        };
 
         onMounted(() => {
             setStep();
@@ -114,6 +120,7 @@ export default defineComponent({
             eventBus,
             next,
             prev,
+            toContentList,
         }
     }
 })
