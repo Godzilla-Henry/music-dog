@@ -116,14 +116,13 @@ export default defineComponent({
         }
         const chunkedArray = ref([]) as any;
         chunkedArray.value = chunkArray(cards.value, 4);
-        console.log(chunkedArray);
+        // console.log(chunkedArray);
 
 
         onMounted(() => {
             setStep();
             resetTranslate();
-
-            console.log(innerStyles.value);
+            // console.log(innerStyles.value);
         })
         
         return {

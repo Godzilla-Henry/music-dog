@@ -33,5 +33,9 @@ export default store((/* { ssrContext } */) => {
 })
 
 // Defined
-import useGlobal from './global'
-export { useGlobal }
+import useGlobal from './global';
+import useApp from './application'
+export { 
+  useGlobal,
+  useApp,
+}

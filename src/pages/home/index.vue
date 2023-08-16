@@ -12,20 +12,21 @@
             multiCarousel
     .row
         .col.q-px-xl.q-py-lg
-            singleCarousel
-    .row
-        .col.q-px-xl.q-py-lg
-            singleCarousel
-    .row
-        .col.q-px-xl.q-py-lg
-            singleCarousel
+            //- 最Hit熱門排行榜
+            singleCarousel(:playList="playList")
+    //- .row
+    //-     .col.q-px-xl.q-py-lg
+    //-         singleCarousel
+    //- .row
+    //-     .col.q-px-xl.q-py-lg
+    //-         singleCarousel
 </template>
 
 <script lang="ts">
-import { computed, defineComponent} from 'vue';
+import { computed, defineComponent, onMounted, ref} from 'vue';
 import singleCarousel from 'src/components/singleCarousel.vue';
 import multiCarousel from 'src/components/multiCarousel.vue';
-import { useGlobal } from 'src/stores';
+import { useApp, useGlobal } from 'src/stores';
 
 export default defineComponent({
     components:{
@@ -34,10 +35,21 @@ export default defineComponent({
     },
     setup () {
         const globalStore = useGlobal();
+        const appStore = useApp();
         const expandPlayerView = computed(() => globalStore.getExpand);
+
+        const playList = ref([]) as any;
+
+        onMounted(() => {
+            setTimeout(() => {
+                playList.value = appStore.getPlayList;
+            }, 1000);
+        });
+
 
         return {
             expandPlayerView,
+            playList,
         }
     }
 })

@@ -7,10 +7,10 @@
         q-btn(round outline color="grey" icon="arrow_forward_ios" size="sm" @click="next")
 .carousel
     .inner(ref='inner' :style='innerStyles')
-        q-card.card(v-for='card in cards' :key='card' flat)
+        q-card.card(v-for='card in cards' :key='card' flat v-if="cards.length > 0")
             .albumImg(@click.prevent="toContentList" :class="{active: card === curActive}")
                 q-img.img.rounded-borders(
-                    src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw8PDw8PDw8PDw0PDw8PDw8PDQ8PDQ8PFRUWFhURFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKBQUFDgUFDisZExkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQYC/8QAFhABAQEAAAAAAAAAAAAAAAAAAAER/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDTgqkoAAAAAAACiACoAoIAKACAAKCAAAAAAC4AgAAAAAAEAAAVFBAAVBQQUBBQEAAAAAAABRAAAAAAAAAFQAVFQBUUASKAIoAAIKgAAAAAAGgAAAAAAAAAAAKgCiAKAAAAgAAAAAAAAAAAAAAAAAAAAoICgiooAigAAgAAKCAoIAAAAAAAACggqAAACoCiKCKAAAAAIKgAAAAAqAAoIAAogCgCAAAAAAKgAKAigAACKgAAAAAACgAYACKAAgAKAIqAqKAGCAqKgAAAAAACgAACKACKgAAKACCoAoAAAAAAAgKCAAAAAoAigAAAAgoCaKAgKAioAoAAAAACAKgAAAAAAAKIAoAiooIogAuAIAAACgAiooAFAEAAAAAAAAACCgIKCAAAoAYAioAoAAAAAAigiooAIAqAAKCAAAoCCgioAoAIKAgACoAqCggqAoAIKAIqAAAAAqAABAVAAABRAFABAAAABUoCoACgIKAIoCAAAAAAAAAAAAAACgIoAgAAAKgAqgDlQAqAAAAUAVAAUAQoAqUAAAUAH//Z"
+                    :src="card.images[0].url"
                     spinner-color="white"
                     style="z-index: -1;"
                 )
@@ -26,19 +26,21 @@
                         :size="isPlayerHover? '16px': 'md'" 
                         @click.stop="play(card)"
                     )
-            q-card-section
-                .text-h6 Song Title {{ card }}
-                .text-subtitle2 singer or group name
+            q-card-section.q-px-none
+                .text-h6.albumInfo {{ card.name }}
+                .text-subtitle2.albumInfo {{ card.description }}
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, toRefs } from 'vue';
 import eventBus from 'src/Utils/useEventBus';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
-    setup () {
-        const cards = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    props: ['playList'],
+    setup (props) {
+        //- Carousel
+        const cards = ref([]) as any;
         const innerStyles = ref({});
         const step = ref('');
         const transitioning = ref(false);
@@ -53,27 +55,30 @@ export default defineComponent({
         const next = () => {
             if (transitioning.value) return;
             transitioning.value = true;
-
             moveLeft();
-            afterTransition(() => {
-                const card = cards.value.shift() as number;
-                cards.value.push(card);
-                resetTranslate();
-                transitioning.value = false;
-            })
+            if(cards.value.length > 0){
+                afterTransition(() => {
+                    const card = cards.value.shift();
+                    cards.value.push(card);
+                    resetTranslate();
+                    transitioning.value = false;
+                })
+            }
         }
 
         const prev = () => {
             if (transitioning.value) return;
             transitioning.value = true;
-
             moveRight();
-            afterTransition(() => {
-                const card = cards.value.pop() as number;
-                cards.value.unshift(card);
-                resetTranslate();
-                transitioning.value = false;
-            })
+            if(cards.value.length > 0){
+                afterTransition(() => {
+                    const card = cards.value.pop();
+                    console.log("prev", card);
+                    cards.value.unshift(card);
+                    resetTranslate();
+                    transitioning.value = false;
+                })
+            }
         }
 
         const moveLeft = () => {
@@ -90,9 +95,9 @@ export default defineComponent({
             }
         }
 
-        const afterTransition = (callback:any) => {
+        const afterTransition = (callback: any) => {
             const listener = () => {
-                callback();
+                callback(); //- 動畫過程
                 inner.value?.removeEventListener('transitionend', listener);
             }
             inner.value?.addEventListener('transitionend', listener);
@@ -105,6 +110,10 @@ export default defineComponent({
             }
         }
 
+        //- Data
+        const { playList } = toRefs(props);
+
+        //- Flow Funciton
         const loading = ref<boolean>(false);
         const isPlayerHover = ref<boolean>(false);
         const curActive = ref<string>();
@@ -123,8 +132,15 @@ export default defineComponent({
         };
 
         onMounted(() => {
-            setStep();
-            resetTranslate();
+            setTimeout(() => {
+                console.log(playList.value);
+                if(playList.value){
+                    cards.value = playList.value;
+                    console.log("cards", cards.value);
+                    setStep();
+                    resetTranslate();
+                }
+            }, 1500);
         })
         
         return {
@@ -154,7 +170,7 @@ export default defineComponent({
         display: flex;
         .card{
             width: 100%;
-            max-width: 250px;
+            max-width: 200px;
             margin-right: 25px;
             background-color: transparent;
             color: grey-9;
@@ -177,6 +193,12 @@ export default defineComponent({
                     bottom: 15px;
                     opacity: 0;
                 }
+            }
+            .albumInfo{
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
         }
     }
