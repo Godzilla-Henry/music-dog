@@ -6,27 +6,27 @@ import { defineStore } from 'pinia'
 
 /** Config State */
 interface IConfigState {
-    appToken: string,
-    playList: Array<any>,
+    appToken: string | null,
+    Categories: Array<any>,
 }
 
 export default defineStore(
     'application', 
     {
         state: (): IConfigState => ({
-            appToken: "undefined",
-            playList: [],
+            appToken: null,
+            Categories: [],
         }),
         getters: {
-            getAppToken: (state): string => state.appToken,
-            getPlayList: (state): Array<any> => state.playList,
+            getAppToken: (state): string | null => state.appToken,
+            getCategories: (state): Array<any> => state.Categories,
         },
         actions: {
             act_setAppToken(val: string): void{
                 this.appToken = val;
             },
-            act_setPlayList(val: Array<any>): void{
-                this.playList = val;
+            act_setCategories(val: Array<any>): void{
+                this.Categories = val;
             },
         },
         // Data persistence destination

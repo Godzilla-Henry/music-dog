@@ -1,17 +1,19 @@
 <template lang="pug">
 .row.justify-between.items-center
-    .title-1 List Title
+    .title-1 {{ title }}
     .row.justify-center.items-center
         q-btn.q-mr-md(rounded outline color="grey" size="12px" label="More")
         q-btn.q-mr-xs(round outline color="grey" icon="arrow_back_ios" size="sm" @click="prev")
         q-btn(round outline color="grey" icon="arrow_forward_ios" size="sm" @click="next")
 .carousel
     .inner(ref='inner' :style='innerStyles')
-        q-card.card(v-for='card in cards' :key='card' flat v-if="cards.length > 0")
-            .albumImg(@click.prevent="toContentList" :class="{active: card === curActive}")
+        q-card.card(v-for='card in playList' :key='card' flat v-if="playList.length > 0")
+            .albumImg(v-show="!isDataReady")
+                q-skeleton(height="200px" square)
+            .albumImg(@click.prevent="toContentList" :class="{active: card === curActive}" v-show="isDataReady")
                 q-img.img.rounded-borders(
                     :src="card.images[0].url"
-                    spinner-color="white"
+                    spinner-color="grey-5"
                     style="z-index: -1;"
                 )
                 .info
@@ -26,41 +28,45 @@
                         :size="isPlayerHover? '16px': 'md'" 
                         @click.stop="play(card)"
                     )
-            q-card-section.q-px-none
+            q-card-section.q-px-none(v-show="!isDataReady")
+                q-skeleton.text-h6(type="text")
+                q-skeleton.text-subtitle2(type="text")
+            q-card-section.q-px-none(v-show="isDataReady")
                 .text-h6.albumInfo {{ card.name }}
                 .text-subtitle2.albumInfo {{ card.description }}
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, toRefs } from 'vue';
+import { computed, defineComponent, onMounted, ref, toRefs, watch } from 'vue';
 import eventBus from 'src/Utils/useEventBus';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
-    props: ['playList'],
+    props: ['title', 'playList'],
     setup (props) {
+        //- Data
+        const { title, playList } = toRefs(props);
         //- Carousel
-        const cards = ref([]) as any;
         const innerStyles = ref({});
         const step = ref('');
         const transitioning = ref(false);
         const inner = ref<HTMLElement>();
 
         const setStep = () => {
-            const innerWidth = inner.value?.scrollWidth!;
-            const totalCards = cards.value.length;
-            step.value = `${innerWidth / totalCards}px`
+            // const innerWidth = inner.value?.scrollWidth!;
+            // const totalPlayList = playList.value.length;
+            // step.value = `${innerWidth / totalPlayList}px`
+            step.value = `225px`; //- card width and margin-right
         }
 
         const next = () => {
             if (transitioning.value) return;
             transitioning.value = true;
             moveLeft();
-            if(cards.value.length > 0){
+            if(playList.value.length > 0){
                 afterTransition(() => {
-                    const card = cards.value.shift();
-                    cards.value.push(card);
-                    resetTranslate();
+                    const card = playList.value.shift();
+                    playList.value.push(card);
                     transitioning.value = false;
                 })
             }
@@ -70,12 +76,11 @@ export default defineComponent({
             if (transitioning.value) return;
             transitioning.value = true;
             moveRight();
-            if(cards.value.length > 0){
+            if(playList.value.length > 0){
                 afterTransition(() => {
-                    const card = cards.value.pop();
+                    const card = playList.value.pop();
                     console.log("prev", card);
-                    cards.value.unshift(card);
-                    resetTranslate();
+                    playList.value.unshift(card);
                     transitioning.value = false;
                 })
             }
@@ -83,21 +88,22 @@ export default defineComponent({
 
         const moveLeft = () => {
             innerStyles.value = {
-                transform: `translateX(-${step.value})
-                            translateX(-${step.value})`
+                transform: `translateX(-${step.value})`,
+                transition: `transform 0.5s`
             }
         }
 
         const moveRight = () => {
             innerStyles.value = {
-                transform: `translateX(${step.value})
-                            translateX(-${step.value})`
+                transform: `translateX(${step.value})`,
+                transition: `transform 0.5s`
             }
         }
 
         const afterTransition = (callback: any) => {
             const listener = () => {
                 callback(); //- 動畫過程
+                resetTranslate();
                 inner.value?.removeEventListener('transitionend', listener);
             }
             inner.value?.addEventListener('transitionend', listener);
@@ -106,12 +112,9 @@ export default defineComponent({
         const resetTranslate = () => {
             innerStyles.value = {
                 transition: 'none',
-                transform: `translateX(0)`
+                transform: `translateX(0)`,
             }
         }
-
-        //- Data
-        const { playList } = toRefs(props);
 
         //- Flow Funciton
         const loading = ref<boolean>(false);
@@ -131,26 +134,29 @@ export default defineComponent({
             router.push({ path: '/musicDog/contentList' })
         };
 
-        onMounted(() => {
-            setTimeout(() => {
-                console.log(playList.value);
-                if(playList.value){
-                    cards.value = playList.value;
-                    console.log("cards", cards.value);
+        //- 監聽Props
+        const isDataReady = computed(() => title.value && (playList.value.length !== 0));
+
+        watch(
+            () => isDataReady.value,
+            (val) => {
+                if(val){
                     setStep();
                     resetTranslate();
                 }
-            }, 1500);
-        })
-        
+            }
+        );
+
         return {
-            cards,
+            playList,
             inner,
             innerStyles,
             loading,
             isPlayerHover,
             curActive,
             eventBus,
+            title,
+            isDataReady,
             next,
             prev,
             play,
@@ -165,7 +171,8 @@ export default defineComponent({
     width: 100%;
     overflow: hidden;
     .inner {
-        transition: transform 0.2s;
+        /* transition: transform 0.2s; */
+        width: 100%;
         white-space: nowrap;
         display: flex;
         .card{
@@ -177,7 +184,7 @@ export default defineComponent({
             .albumImg{
                 position: relative;
                 .img{
-                    max-width: 250px;
+                    width: 200px;
                 }
                 &:hover, &.active{ box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3); }
                 &:hover .info, &:hover .player, &.active .info, &.active .player{ opacity: 1; }

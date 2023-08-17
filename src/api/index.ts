@@ -73,7 +73,6 @@ const APPController = (function(APICtrl) {
         //- 取得播放清單
         const genreId = genres[0].id;
         const playlist = await APICtrl.getPlaylistByGenre(appToken, genreId);       
-        appStore.act_setPlayList(playlist);
 
     }
 
