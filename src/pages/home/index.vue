@@ -1,12 +1,16 @@
 <template lang="pug">
-.container(:class="{hidden: expandPlayerView}")
+.container(:class="{hidden: expandPlayerView}" v-if="isAppReady")
     .row
         .col.q-px-xl.q-pt-md
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
+            q-chip(
+                v-for="catergory in categories.slice(0,7)" :key="catergory"
+                square size="16px" color='grey-6' text-color='white'
+            ) {{ catergory.name }}
+
+            q-chip(
+                square size="16px" color='grey-6' text-color='white'
+            ) 更多...
+            
     .row 
         .col.q-px-xl.q-py-lg
             multiCarousel(:title="equal.title" :playList="equal.playList")
@@ -44,6 +48,8 @@ export default defineComponent({
         const appStore = useApp();
         const expandPlayerView = computed(() => globalStore.getExpand);
 
+        const categories = ref();
+
         const isAppReady = computed(() => appStore.getAppToken && (appStore.getCategories.length > 0));
 
         const top = ref<IPlayComponent>({
@@ -68,33 +74,28 @@ export default defineComponent({
 
 
         const init = async() => {
-            console.log('init', isAppReady.value);
-
-            await getPlayListByCategory(appStore.getCategories[7].id)
+            categories.value = [...appStore.getCategories];
+            await getPlayListByCategory(categories.value[7].id)
             .then((res: any) => {
-                console.log(res.result);
-                equal.value.title = appStore.getCategories[7].name;
+                equal.value.title = categories.value[7].name;
                 equal.value.playList = res.result.playlists.items;
             });
 
-            await getPlayListByCategory(appStore.getCategories[0].id)
+            await getPlayListByCategory(categories.value[0].id)
             .then((res: any) => {
-                console.log(res.result);
-                top.value.title = appStore.getCategories[0].name;
+                top.value.title = categories.value[0].name;
                 top.value.playList = res.result.playlists.items;
             });
 
-            await getPlayListByCategory(appStore.getCategories[3].id)
+            await getPlayListByCategory(categories.value[3].id)
             .then((res: any) => {
-                console.log(res.result);
-                pop.value.title = appStore.getCategories[3].name;
+                pop.value.title = categories.value[3].name;
                 pop.value.playList = res.result.playlists.items;
             });
 
-            await getPlayListByCategory(appStore.getCategories[2].id)
+            await getPlayListByCategory(categories.value[2].id)
             .then((res: any) => {
-                console.log(res.result);
-                hemma.value.title = appStore.getCategories[2].name;
+                hemma.value.title = categories.value[2].name;
                 hemma.value.playList = res.result.playlists.items;
             });
         }
@@ -106,12 +107,18 @@ export default defineComponent({
             }
         );
 
+        onMounted(() => {
+            if(isAppReady.value) init();
+        })
+
         return {
             expandPlayerView,
+            isAppReady,
             top,
             pop,
             hemma,
             equal,
+            categories,
         }
     }
 })

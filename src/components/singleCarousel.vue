@@ -2,7 +2,7 @@
 .row.justify-between.items-center
     .title-1 {{ title }}
     .row.justify-center.items-center
-        q-btn.q-mr-md(rounded outline color="grey" size="12px" label="More")
+        q-btn.q-mr-md(rounded outline color="grey" size="12px" label="更多")
         q-btn.q-mr-xs(round outline color="grey" icon="arrow_back_ios" size="sm" @click="prev")
         q-btn(round outline color="grey" icon="arrow_forward_ios" size="sm" @click="next")
 .carousel
@@ -10,7 +10,7 @@
         q-card.card(v-for='card in playList' :key='card' flat v-if="playList.length > 0")
             .albumImg(v-show="!isDataReady")
                 q-skeleton(height="200px" square)
-            .albumImg(@click.prevent="toContentList" :class="{active: card === curActive}" v-show="isDataReady")
+            .albumImg(@click.prevent="toContentList(card)" :class="{active: card === curActive}" v-show="isDataReady")
                 q-img.img.rounded-borders(
                     :src="card.images[0].url"
                     spinner-color="grey-5"
@@ -120,18 +120,21 @@ export default defineComponent({
         const loading = ref<boolean>(false);
         const isPlayerHover = ref<boolean>(false);
         const curActive = ref<string>();
+        //- 播放歌曲
         const play = (card: any) => {
             loading.value = true;
             curActive.value = card;
             setTimeout(() => {
-                eventBus.emit('openPlayer')
+                eventBus.emit('openPlayer', card)
                 loading.value = false;
             }, 700);
         }
+
+        //- 前往專輯頁面
         const router = useRouter();
-        const toContentList = () => {
+        const toContentList = (card: any) => {
             console.log("To ContentList");
-            router.push({ path: '/musicDog/contentList' })
+            router.push({ path: `/musicDog/contentList/${card.id}`})
         };
 
         //- 監聽Props

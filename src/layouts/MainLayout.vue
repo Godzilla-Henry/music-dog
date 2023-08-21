@@ -11,7 +11,7 @@ q-layout(view='lHh Lpr fFf')
     router-view
     
   //- Footer
-  Footer.fixed(v-show="showFooter")
+  Footer.fixed(v-show="showFooter" :playerInfo="playerInfo")
 </template>
 
 <script lang="ts">
@@ -33,15 +33,19 @@ export default defineComponent({
 
   setup () {
     const showFooter = ref(false);
+    const playerInfo = ref(null);
 
     onMounted(() => {
-      eventBus.on('openPlayer', () => {
+      eventBus.on('openPlayer', (data: any) => {
         showFooter.value = true;
+        console.log(data)
+        playerInfo.value = data;
       });
     });
 
     return {
       showFooter,
+      playerInfo,
     }
   }
 });

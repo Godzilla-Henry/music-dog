@@ -10,7 +10,7 @@ service.interceptors.request.use(
     (config: AxiosRequestConfig<any>): InternalAxiosRequestConfig<any> | Promise<InternalAxiosRequestConfig<any>> => {
         const appStore = useApp();
         const appToken = appStore.getAppToken;
-        console.log(appToken);
+        // console.log(appToken);
         if (appToken) {
             config.headers = {
                 'Authorization' : 'Bearer ' + appToken

@@ -8,8 +8,20 @@ const convertToQueryString = (queryParams: any) => {
     return queryString
 }
 
+export const getPlayList = (playlist_id: string) => 
+    request({
+        url: `/playlists/${playlist_id}`,
+        method: "get",
+    })
+
 export const getPlayListByCategory = (categoryId: string) => 
     request({
-        url: `https://api.spotify.com/v1/browse/categories/${categoryId}/playlists?limit=12`,
+        url: `/browse/categories/${categoryId}/playlists?limit=12`,
+        method: "get",
+    })
+
+export const getPlayListTracks = (playlist_id: string) => 
+    request({
+        url: `/playlists/${playlist_id}/tracks`,
         method: "get",
     })

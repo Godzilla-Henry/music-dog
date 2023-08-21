@@ -1,15 +1,18 @@
 <template lang="pug">
-.container.q-pa-xl
+.container.q-pa-xl(v-if="playList")
     .flex.items-center
         q-img.img.rounded-borders(
-            src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw8PDw8PDw8PDw0PDw8PDw8PDQ8PDQ8PFRUWFhURFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKBQUFDgUFDisZExkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQYC/8QAFhABAQEAAAAAAAAAAAAAAAAAAAER/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAL/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDTgqkoAAAAAAACiACoAoIAKACAAKCAAAAAAC4AgAAAAAAEAAAVFBAAVBQQUBBQEAAAAAAABRAAAAAAAAAFQAVFQBUUASKAIoAAIKgAAAAAAGgAAAAAAAAAAAKgCiAKAAAAgAAAAAAAAAAAAAAAAAAAAoICgiooAigAAgAAKCAoIAAAAAAAACggqAAACoCiKCKAAAAAIKgAAAAAqAAoIAAogCgCAAAAAAKgAKAigAACKgAAAAAACgAYACKAAgAKAIqAqKAGCAqKgAAAAAACgAACKACKgAAKACCoAoAAAAAAAgKCAAAAAoAigAAAAgoCaKAgKAioAoAAAAACAKgAAAAAAAKIAoAiooIogAuAIAAACgAiooAFAEAAAAAAAAACCgIKCAAAoAYAioAoAAAAAAigiooAIAqAAKCAAAoCCgioAoAIKAgACoAqCggqAoAIKAIqAAAAAqAABAVAAABRAFABAAAABUoCoACgIKAIoCAAAAAAAAAAAAAACgIoAgAAAKgAqgDlQAqAAAAUAVAAUAQoAqUAAAUAH//Z"
-            spinner-color="white"
+            :src="playList?.images[0].url"
+            spinner-color="grey-5"
             style="height: 200px; max-width: 200px"
         )
         div.q-pa-xl
-            .title-1 Song Title
-            .text-subtitle1 Album / singer or group
-            .text-subtitle1 10 songs / 40 minutes
+            .title-1 {{ playList.name }}
+            .text-subtitle1 {{ playList.description }}
+            .text-subtitle1 
+                |{{ tracks.length }}首歌曲 / 
+                q-icon(name="thumb_up")
+                |{{ playList.followers.total }}人追蹤
             .flex.q-my-md
                 q-btn.q-mr-sm(unelevated rounded color='grey' label='play' icon="play_arrow")
                 q-btn.q-mr-sm(outline rounded color='grey' label='save storage' icon="library_add")
@@ -17,77 +20,48 @@
 
     .flex.full-width
         q-list.full-width(separator)
-            q-item.q-py-lg(clickable v-ripple v-for="(item, index) in songList" :key="index")
+            q-item.q-py-lg(clickable v-ripple v-for="(item, index) in tracks" :key="index")
                 q-item-section
-                    q-item-label {{ index+1 }}
+                    q-img(
+                        :src="item.track.album.images[0].url"
+                        spinner-color='grey-5' 
+                        style='height: 35px; max-width: 35px'
+                    )
                 q-item-section 
-                    q-item-label {{ item.name }}
+                    q-item-label {{ item.track.name }}
                 q-item-section 
-                    q-item-label {{ item.singer }}
+                    q-item-label {{ item.track.artists.map((item) => item.name).toString() }}
                 q-item-section 
-                    q-item-label {{ item.time }}
+                    q-item-label {{ formatMsTime(item.track.duration_ms) }}
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref } from 'vue';
+import { getPlayList } from 'src/api/axios/spotify/playList';
+import { useRoute } from 'vue-router';
+import { formatMsTime } from 'src/Utils/useDayjs';
 
 export default defineComponent({
     setup () {
-        const songList = ref([
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-            {
-                name: 'songTitle',
-                singer: 'singer or group',
-                time: '4:16'
-            },
-        ]);
+        const playList = ref();
+        const tracks = ref([]) as any;
+
+        const route = useRoute();
+        const init = async() => {
+            const playList_id = route.params.id as string;
+            await getPlayList(playList_id)
+            .then((res: any) => {
+                console.log(res.result);
+                playList.value = res.result;
+                tracks.value = [...res.result.tracks.items];
+            })
+        }
+        init();
 
         return {
-            songList
+            playList,
+            tracks,
+            formatMsTime,
         }
     }
 })

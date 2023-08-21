@@ -11,11 +11,13 @@ const routes: RouteRecordRaw[] = [
         component: () => import('components/commonContent.vue'),
         children:[
           {
+            name: 'home',
             path: '/musicDog/home',
             component: () => import('pages/home/index.vue'),
           },
           {
-            path: '/musicDog/contentList',
+            name: 'contentList',
+            path: '/musicDog/contentList/:id',
             component: () => import('pages/content-list/index.vue'),
           }
         ]
