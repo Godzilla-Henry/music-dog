@@ -28,43 +28,37 @@ q-drawer(
         q-separator
         //- 功能清單
         q-list.rounded-borders.text-grey.q-pa-md
-            q-item-label.q-pa-md(overline) Discover
+            q-item-label.q-pa-md(overline) 發現好音樂
             q-item.active(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='cottage')
-                q-item-section Home
-            q-item(clickable v-ripple)
-                q-item-section(avatar)
-                    q-icon(name='trending_up')
-                q-item-section Trends
+                q-item-section 首頁
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='headphones')
-                q-item-section Library
+                q-item-section 媒體庫
 
-            q-item-label.q-pa-md(overline) Your Collection
+            q-item-label.q-pa-md(overline) 您的好歌收藏
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='favorite')
-                q-item-section Liked Songs
+                q-item-section 喜愛的音樂
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='art_track')
-                q-item-section Favorite Artist
-            q-item(clickable v-ripple)
-                q-item-section(avatar)
-                    q-icon(name='playlist_add_check_circle')
-                q-item-section Playlist
+                q-item-section 喜愛的歌手
 
-            q-item-label.q-pa-md(overline) Personal
+            q-item-label.q-pa-md(overline) 個人化
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='settings')
-                q-item-section Settings
+                q-item-section 設定
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='help')
-                q-item-section Help
+                q-item-section 幫助
+        
+        q-separator
     
     .q-mini-drawer-hide.absolute(style='bottom: 5%; right: 17px;')
         q-btn(

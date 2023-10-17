@@ -1,15 +1,15 @@
 <template lang="pug">
 .flex.justify-between.items-center
     div
-        .text-subtitle1 describe
-        .title-1 List Title
+        .text-subtitle1 推薦播放清單
+        .title-1 {{ title }}
     .flex.flex-center
-        q-btn.q-mr-md(rounded outline color="grey" size="12px" label="More")
+        q-btn.q-mr-md(rounded outline color="grey" size="12px" label="更多")
         q-btn.q-mr-xs(round outline color="grey" icon="arrow_back_ios" size="sm" @click="prev")
         q-btn(round outline color="grey" icon="arrow_forward_ios" size="sm" @click="next")
 .carousel
     .inner(ref='inner' :style='innerStyles')
-        q-card.card(v-for='(list) in chunkedArray' :key='list' flat)
+        q-card.card(v-for='(list) in chunkedArray' :key='list' flat v-if="chunkedArray.length > 0")
             q-list
                 q-item.q-my-sm.playerListItem(
                     v-for='item in list' :key='item' 
@@ -17,12 +17,15 @@
                 )
                     q-item-section(avatar)
                         .albumImg
-                            q-avatar(square color='grey-7' text-color='white') {{ item }}
+                            q-img.img.rounded-borders(
+                                :src="item.images[0].url"
+                                spinner-color="grey-5"
+                            )
                             .player
-                                q-btn(round flat color="white" icon="play_arrow" size='16px' @click="eventBus.emit('openPlayer')")
+                                q-btn(round outline color="white" icon="play_arrow" size='15px' @click="eventBus.emit('openPlayer')")
                     q-item-section.info
-                        q-item-label Song Title
-                        q-item-label(caption lines='1') singer or group
+                        q-item-label {{ item.name }}
+                        q-item-label(caption lines='1') {{ item.description }}
                         .action.flex
                             q-btn(flat round color="grey-6" size="md" icon="thumb_up")
                             q-btn(flat round color="grey-6" size="md" icon="thumb_down")
@@ -33,157 +36,170 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
-import eventBus from 'src/Utils/useEventBus';
+import { computed, defineComponent, onMounted, ref, toRefs, watch } from "vue";
+import eventBus from "src/Utils/useEventBus";
 
 export default defineComponent({
-    setup () {
-        const cards = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-        const innerStyles = ref({});
-        const step = ref('');
-        const transitioning = ref(false);
-        const inner = ref<HTMLElement>();
+  props: ["title", "playList"],
+  setup(props) {
+    //- Data
+    const { title, playList } = toRefs(props);
+    console.log("Multiple title", title.value);
+    console.log("Multiple playlist", playList.value);
 
-        const setStep = () => {
-            const innerWidth = inner.value?.scrollWidth!;
-            const totalList = chunkedArray.value.length;
-            step.value = `${innerWidth / totalList}px`
-        }
+    //- Carousel
+    const innerStyles = ref({});
+    const step = ref("");
+    const transitioning = ref(false);
+    const inner = ref<HTMLElement>();
 
-        const next = () => {
-            if (transitioning.value) return;
-            transitioning.value = true;
+    const setStep = () => {
+      step.value = `475px`;
+    };
 
-            moveLeft();
-            afterTransition(() => {
-                const card = chunkedArray.value.shift();
-                chunkedArray.value.push(card);
-                resetTranslate();
-                transitioning.value = false;
-            })
-        }
+    const next = () => {
+      if (transitioning.value) return;
+      transitioning.value = true;
+      moveLeft();
+      if (chunkedArray.value.length > 0) {
+        afterTransition(() => {
+          const card = chunkedArray.value.shift();
+          chunkedArray.value.push(card);
+          transitioning.value = false;
+        });
+      }
+    };
 
-        const prev = () => {
-            if (transitioning.value) return;
-            transitioning.value = true;
+    const prev = () => {
+      if (transitioning.value) return;
+      transitioning.value = true;
+      moveRight();
+      if (chunkedArray.value.length > 0) {
+        afterTransition(() => {
+          const card = chunkedArray.value.pop();
+          chunkedArray.value.unshift(card);
+          transitioning.value = false;
+        });
+      }
+    };
 
-            moveRight();
-            afterTransition(() => {
-                const card = chunkedArray.value.pop();
-                chunkedArray.value.unshift(card);
-                resetTranslate();
-                transitioning.value = false;
-            })
-        }
+    const moveLeft = () => {
+      innerStyles.value = {
+        transform: `translateX(-${step.value})`,
+        transition: `transform 0.5s`,
+      };
+    };
 
-        const moveLeft = () => {
-            innerStyles.value = {
-                transform: `translateX(-${step.value})
-                            translateX(-${step.value})`
-            }
-        }
+    const moveRight = () => {
+      innerStyles.value = {
+        transform: `translateX(${step.value})`,
+        transition: `transform 0.5s`,
+      };
+    };
 
-        const moveRight = () => {
-            innerStyles.value = {
-                transform: `translateX(${step.value})
-                            translateX(-${step.value})`
-            }
-        }
+    const afterTransition = (callback: any) => {
+      const listener = () => {
+        callback();
+        resetTranslate();
+        inner.value?.removeEventListener("transitionend", listener);
+      };
+      inner.value?.addEventListener("transitionend", listener);
+    };
 
-        const afterTransition = (callback:any) => {
-            const listener = () => {
-                callback();
-                inner.value?.removeEventListener('transitionend', listener);
-            }
-            inner.value?.addEventListener('transitionend', listener);
-        }
+    const resetTranslate = () => {
+      innerStyles.value = {
+        transition: "none",
+        transform: `translateX(0)`,
+      };
+    };
 
-        const resetTranslate = () => {
-            innerStyles.value = {
-                transition: 'none',
-                transform: `translateX(0)`
-            }
-        }
+    const isPlayerHover = ref<boolean>(false);
 
-        const isPlayerHover = ref<boolean>(false);
-
-        //- 組合List
-        function chunkArray(arr: any, size: number) {
-            const chunkCount = Math.ceil(arr.length / size);
-            return Array.from({ length: chunkCount }, (_, index) =>
-                arr.slice(index * size, index * size + size)
-            );
-        }
-        const chunkedArray = ref([]) as any;
-        chunkedArray.value = chunkArray(cards.value, 4);
-        console.log(chunkedArray);
-
-
-        onMounted(() => {
-            setStep();
-            resetTranslate();
-
-            console.log(innerStyles.value);
-        })
-        
-        return {
-            chunkedArray,
-            inner,
-            innerStyles,
-            isPlayerHover,
-            eventBus,
-            next,
-            prev,
-        }
+    //- 組合List
+    function chunkArray(arr: any, size: number) {
+      console.log(arr);
+      const chunkCount = Math.ceil(arr.length / size);
+      return Array.from({ length: chunkCount }, (_, index) =>
+        arr.slice(index * size, index * size + size)
+      );
     }
-})
+
+    const chunkedArray = ref([]) as any;
+    //- 監聽Props
+    const isDataReady = computed(
+      () => title.value && playList.value.length !== 0
+    );
+    watch(
+      () => isDataReady.value,
+      (val) => {
+        if (val) {
+          chunkedArray.value = chunkArray(playList.value, 4);
+          setStep();
+          resetTranslate();
+        }
+      },
+      { immediate: true }
+    );
+
+    return {
+      title,
+      chunkedArray,
+      inner,
+      innerStyles,
+      isPlayerHover,
+      eventBus,
+      next,
+      prev,
+    };
+  },
+});
 </script>
 
 <style scoped>
 .carousel {
-    width: 100%;
-    overflow: hidden;
-    .inner {
-        transition: transform 0.2s;
-        white-space: nowrap;
-        display: flex;
-        .card{
-            width: 100%;
-            max-width: 450px;
-            margin-right: 25px;
-            background-color: transparent;
-            color: grey-9;
-            .playerListItem{
-                &:hover .albumImg .player,
-                &:hover .info .action{
-                    display: block !important;
-                }
-                .albumImg{
-                    position: relative;
-                    .img{
-                        max-width: 250px;
-                    }
-                    .player{
-                        background-color: grey;
-                        width: 100%;
-                        height: 100%;
-                        position: absolute;
-                        left: 0px;
-                        bottom: 0px;
-                        display: none;
-                    }
-                }
-
-                .info{
-                    position: relative;
-                    .action{
-                        position: absolute;
-                        right: 0;
-                        display: none;
-                    }
-                }
-            }
+  width: 100%;
+  overflow: hidden;
+  .inner {
+    transition: transform 0.2s;
+    white-space: nowrap;
+    display: flex;
+    .card {
+      width: 100%;
+      max-width: 450px;
+      margin-right: 25px;
+      background-color: transparent;
+      color: grey-9;
+      .playerListItem {
+        &:hover .albumImg .player,
+        &:hover .info .action {
+          display: block !important;
         }
+        .albumImg {
+          position: relative;
+          .img {
+            width: 45px;
+          }
+          .player {
+            /* background-color: grey; */
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            bottom: 0px;
+            display: none;
+          }
+        }
+
+        .info {
+          position: relative;
+          .action {
+            position: absolute;
+            right: 0;
+            display: none;
+          }
+        }
+      }
     }
+  }
 }
 </style>

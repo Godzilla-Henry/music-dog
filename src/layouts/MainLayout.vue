@@ -11,19 +11,19 @@ q-layout(view='lHh Lpr fFf')
     router-view
     
   //- Footer
-  Footer.fixed(v-show="showFooter")
+  Footer.fixed(v-show="showFooter" :playerInfo="playerInfo")
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
-import eventBus from 'src/Utils/useEventBus';
+import { computed, defineComponent, onMounted, ref } from "vue";
+import eventBus from "src/Utils/useEventBus";
 //- Components
-import HeaderBar from './header-bar/index.vue';
-import SideBar from './side-bar/index.vue';
-import Footer from './footer-player/index.vue';
+import HeaderBar from "./header-bar/index.vue";
+import SideBar from "./side-bar/index.vue";
+import Footer from "./footer-player/index.vue";
 
 export default defineComponent({
-  name: 'MainLayout',
+  name: "MainLayout",
 
   components: {
     HeaderBar,
@@ -31,23 +31,28 @@ export default defineComponent({
     Footer,
   },
 
-  setup () {
+  setup() {
     const showFooter = ref(false);
+    const playerInfo = ref(null);
 
     onMounted(() => {
-      eventBus.on('openPlayer', () => {
+      eventBus.on("openPlayer", (data: any) => {
         showFooter.value = true;
+        console.log(data);
+        playerInfo.value = data;
       });
     });
 
     return {
       showFooter,
-    }
-  }
+      playerInfo,
+    };
+  },
 });
 </script>
 
 <style lang="scss" scoped>
-.fixed{position: fixed;}
+.fixed {
+  position: fixed;
+}
 </style>
-
