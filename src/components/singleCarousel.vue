@@ -172,7 +172,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .carousel {
   width: 100%;
   overflow: hidden;
