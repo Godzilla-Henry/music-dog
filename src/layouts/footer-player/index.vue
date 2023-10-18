@@ -1,6 +1,6 @@
 <!-- 音樂播放器 -->
 <template lang="pug">
-q-footer(elevated)
+q-footer
     q-card(v-if="tracks.length > 0")
         audio(preload='true')
             source(:src='playingTrack.track.preview_url')
@@ -29,8 +29,8 @@ q-footer(elevated)
             q-btn(flat round color="grey-6" size="md" icon="volume_up")
             q-btn(flat round color="grey-6" size="md" icon="replay")
             q-btn(flat round color="grey-6" size="md" icon="shuffle")
-            q-btn(
-                flat round color="grey-10" size="lg" 
+            q-btn.sys-btn(
+                flat round size="lg" 
                 :icon="expandPlayerView? 'expand_more': 'keyboard_arrow_up'" 
                 @click.prevent="eventBus.emit('openPlayerView', {tracks: tracks, playingTrack: playingTrack, playerInfo: playerInfo})"
             )
@@ -44,6 +44,7 @@ import { formatSTime } from "src/Utils/useDayjs";
 
 //- API
 import { getTracks } from "src/axios/mockData/index";
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   props: ["playerInfo"],
@@ -193,5 +194,16 @@ export default defineComponent({
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.body--light {
+  .sys-btn {
+    color: #000000;
+  }
+}
+.body--dark {
+  .sys-btn {
+    color: #ffffff;
+  }
 }
 </style>

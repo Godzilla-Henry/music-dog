@@ -2,13 +2,16 @@
 .container(:class="{hidden: expandPlayerView}")
     .row
         .col.q-px-xl.q-pt-md
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
-            q-chip(square size="16px" color='grey-6' text-color='white') catergory
+            q-chip(
+                v-for="catergory in categoriesResult" :key="catergory"
+                square size="16px"
+            ) {{ catergory.name }}
+
+            q-chip(
+                square size="16px"
+            ) 更多...
     template(
-        v-for="(item, index) in result"
+        v-for="(item, index) in playlistResult"
         :key="item"
     )
         .row(v-if="index === 0")
@@ -21,40 +24,52 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref} from 'vue';
-import singleCarousel from 'src/components/singleCarousel.vue';
-import multiCarousel from 'src/components/multiCarousel.vue';
-import { useGlobal } from 'src/stores';
-import { getPlaylists } from 'src/axios/mockData/index';
+import { computed, defineComponent, ref } from "vue";
+import singleCarousel from "src/components/singleCarousel.vue";
+import multiCarousel from "src/components/multiCarousel.vue";
+import { useGlobal } from "src/stores";
+import { getPlaylists, getCategories } from "src/axios/mockData/index";
 
 export default defineComponent({
-    components:{
-        singleCarousel,
-        multiCarousel,
-    },
-    setup () {
-        const globalStore = useGlobal();
-        const expandPlayerView = computed(() => globalStore.getExpand);
+  components: {
+    singleCarousel,
+    multiCarousel,
+  },
+  setup() {
+    const globalStore = useGlobal();
+    const expandPlayerView = computed(() => globalStore.getExpand);
 
-        const result = ref();
+    const categoriesResult = ref();
+    const playlistResult = ref();
 
-        getPlaylists()
-            .then((res: any) => {
-                // 在這裡處理獲得的數據
-                console.log('成功獲取數據:', res.data);
-                result.value = [...res.data];
-                
-            })
-            .catch(error => {
-                // 處理錯誤
-                console.error('出現錯誤:', error);
-            });
+    getCategories()
+      .then((res: any) => {
+        // 在這裡處理獲得的數據
+        console.log("成功獲取數據:", res.data);
+        categoriesResult.value = [...res.data.categories.items];
+        categoriesResult.value = categoriesResult.value.slice(0, 7);
+      })
+      .catch((error) => {
+        // 處理錯誤
+        console.error("出現錯誤:", error);
+      });
 
-        return {
-            expandPlayerView,
-            result
-        }
-    }
-})
+    getPlaylists()
+      .then((res: any) => {
+        // 在這裡處理獲得的數據
+        console.log("成功獲取數據:", res.data);
+        playlistResult.value = [...res.data];
+      })
+      .catch((error) => {
+        // 處理錯誤
+        console.error("出現錯誤:", error);
+      });
+
+    return {
+      expandPlayerView,
+      categoriesResult,
+      playlistResult,
+    };
+  },
+});
 </script>
-

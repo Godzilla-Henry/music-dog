@@ -12,7 +12,7 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary   : #1976D2;
+$primary   : #008fe8;
 $secondary : #26A69A;
 $accent    : #9C27B0;
 
@@ -25,6 +25,7 @@ $info      : #31CCEC;
 $warning   : #F2C037;
 
 //- Custom
-$grey      : #686868;
+$grey-light      : #686868;
+$grey-dark      : #d1d1d1;
 
 @import "./variables.scss";

@@ -44,8 +44,6 @@ export default defineComponent({
   setup(props) {
     //- Data
     const { title, playList } = toRefs(props);
-    console.log("Multiple title", title.value);
-    console.log("Multiple playlist", playList.value);
 
     //- Carousel
     const innerStyles = ref({});

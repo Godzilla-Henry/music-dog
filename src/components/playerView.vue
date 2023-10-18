@@ -29,7 +29,7 @@
                                     v-for='track in tracks' :key='track.track.id' 
                                     clickable v-ripple 
                                     :active="track === playingTrack" 
-                                    active-class="bg-grey-3 text-grey-8"
+                                    active-class="trackActive"
                                     @click.stop="playTrack(track)"
                                 )
                                     q-item-section(avatar)
@@ -116,7 +116,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .playerView {
-  background: #ffffff;
   height: calc(100vh - 108px - 50px);
   top: 0px;
   left: 0px;
@@ -144,6 +143,25 @@ export default defineComponent({
         white-space: nowrap;
         text-overflow: ellipsis;
       }
+    }
+  }
+}
+
+.body--light {
+  .playerViewPanel {
+    background: #ffffff;
+    .trackActive {
+      background: rgb(227, 227, 227);
+      color: #121212;
+    }
+  }
+}
+.body--dark {
+  .playerViewPanel {
+    background: #121212;
+    .trackActive {
+      background: rgb(49, 49, 49);
+      color: #ffffff;
     }
   }
 }
