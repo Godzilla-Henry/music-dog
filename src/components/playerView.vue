@@ -13,17 +13,17 @@
             .flex.flex-center.fit
                 div.playerViewContent.q-py-md
                     q-tabs.text-grey(v-model='tab' dense active-color='primary' indicator-color='primary' align='justify' narrow-indicator)
-                        q-tab(name='Next' label='即將播放')
-                        q-tab(name='Lyrics' label='專輯')
-                        q-tab(name='Others' label='Others')
+                        q-tab(name='Next' :label="$t('playerView.playingSoon')")
+                        q-tab(name='Lyrics' :label="$t('playerView.album')")
+                        q-tab(name='Others' :label="$t('playerView.others')")
                     q-separator
                     q-tab-panels.playerViewPanel(v-model='tab' animated)
                         q-tab-panel(name='Next')
                             .flex.justify-between.items-center
                                 div
-                                    span 正在播放清單
+                                    span {{ $t('playerView.nowPlayingList') }}
                                     .text-h6 {{ playerInfo?.name }}
-                                q-btn(outline rounded color="grey-9" icon="library_add" label="儲存到媒體庫")
+                                q-btn(outline rounded color="grey-9" icon="library_add" :label="$t('playerView.saveToMedia')")
                             q-list
                                 q-item.q-my-sm(
                                     v-for='track in tracks' :key='track.track.id' 

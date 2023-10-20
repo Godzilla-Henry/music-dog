@@ -9,7 +9,7 @@
 
             q-chip(
                 square size="16px"
-            ) 更多...
+            ) {{ $t('commonUse.more') }}...
     template(
         v-for="(item, index) in playlistResult"
         :key="item"

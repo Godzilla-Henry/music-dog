@@ -1,0 +1,26 @@
+{
+    "sideBar": {
+        "discovery": "Discovery",
+        "collection": "Collection",
+        "personalization": "Personalization",
+        "home": "Home",
+        "media": "Media",
+        "loveSongs": "Love Songs",
+        "loveSingers": "Love Singers",
+        "setting": "Setting",
+        "help": "Help"
+    },
+    "commonUse": {
+        "more": "More"
+    },
+    "multiCarousel": {
+        "recommend": "Recommend Playlist"
+    },
+    "playerView": {
+        "playingSoon": "Playing soon",
+        "album": "Album",
+        "others": "Others",
+        "nowPlayingList": "Now playing list",
+        "saveToMedia": "Save to media"
+    }
+}

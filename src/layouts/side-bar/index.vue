@@ -29,35 +29,35 @@ q-drawer(
         q-separator
         //- 功能清單
         q-list.rounded-borders.text-grey.q-pa-md
-            q-item-label.q-pa-md(overline) 發現好音樂
+            q-item-label.q-pa-md(overline) {{ $t('sideBar.discovery') }}
             q-item.active(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='cottage')
-                q-item-section 首頁
+                q-item-section {{ $t('sideBar.home') }}
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='headphones')
-                q-item-section 媒體庫
+                q-item-section {{ $t('sideBar.media') }}
 
-            q-item-label.q-pa-md(overline) 您的好歌收藏
+            q-item-label.q-pa-md(overline) {{ $t('sideBar.collection') }}
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='favorite')
-                q-item-section 喜愛的音樂
+                q-item-section {{ $t('sideBar.loveSongs') }}
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='art_track')
-                q-item-section 喜愛的歌手
+                q-item-section {{ $t('sideBar.loveSingers') }}
 
-            q-item-label.q-pa-md(overline) 個人化
+            q-item-label.q-pa-md(overline) {{ $t('sideBar.personalization') }}
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='settings')
-                q-item-section 設定
+                q-item-section {{ $t('sideBar.setting') }}
             q-item(clickable v-ripple)
                 q-item-section(avatar)
                     q-icon(name='help')
-                q-item-section 幫助
+                q-item-section {{ $t('sideBar.help') }}
         
         q-separator
     
@@ -68,7 +68,7 @@ q-drawer(
             icon='navigate_before' 
             @click='close'
         )
-    .q-mini-drawer-only.absolute(style='bottom: 5%; left: 17px;')
+    .q-mini-drawer-only.absolute(style='bottom: 5%; left: 25px;')
         q-btn(
             dense round unelevated 
             color='grey-6' 

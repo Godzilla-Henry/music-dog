@@ -1,0 +1,26 @@
+{
+    "sideBar": {
+        "discovery": "發現好音樂",
+        "collection": "我的收藏",
+        "personalization": "個人化",
+        "home": "首頁",
+        "media": "媒體庫",
+        "loveSongs": "喜愛音樂",
+        "loveSingers": "喜愛歌手",
+        "setting": "設定",
+        "help": "幫助"
+    },
+    "commonUse": {
+        "more": "更多"
+    },
+    "multiCarousel": {
+        "recommend": "推薦播放歌單"
+    },
+    "playerView": {
+        "playingSoon": "即將播放",
+        "album": "專輯",
+        "others": "其他",
+        "nowPlayingList": "正在播放清單",
+        "saveToMedia": "儲存到媒體庫"
+    }
+}

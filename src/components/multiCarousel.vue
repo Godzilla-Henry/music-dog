@@ -1,10 +1,10 @@
 <template lang="pug">
 .flex.justify-between.items-center
     div
-        .text-subtitle1 推薦播放清單
+        .text-subtitle1 {{ $t('multiCarousel.recommend') }}
         .title-1 {{ title }}
     .flex.flex-center
-        q-btn.q-mr-md(rounded outline color="grey" size="12px" label="更多")
+        q-btn.q-mr-md(rounded outline color="grey" size="12px" :label="$t('commonUse.more')")
         q-btn.q-mr-xs(round outline color="grey" icon="arrow_back_ios" size="sm" @click="prev")
         q-btn(round outline color="grey" icon="arrow_forward_ios" size="sm" @click="next")
 .carousel
